@@ -1,0 +1,15 @@
+{
+  "name": "site-search-wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "site_search_wasm_bg.wasm",
+    "site_search_wasm.js",
+    "site_search_wasm.d.ts"
+  ],
+  "main": "site_search_wasm.js",
+  "types": "site_search_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

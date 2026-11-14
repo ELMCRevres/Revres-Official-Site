@@ -25,6 +25,11 @@
         </div>
     </header>
     <section class="main">
+        <section class="search">
+            <form action="search.html" method="get" class="nav-search-form">
+                <input type="text" name="q" placeholder="サイト内検索🔍" class="nav-search-input" autocomplete="off">
+            </form>
+        </section>
         <h3 class="content1-title-welcome-1 align-center">
             <p>
                 『人外都市レヴレズの日常』
@@ -54,7 +59,7 @@
             <section class="works bottom">
                 <h2 class="content2-title-works-1 align-center">
                     <p name="works">コンテンツ</p>
-                    <hr>
+                    <hr class="content2-line">
                 </h2>
                 <div class="content2-box-works-1">
                     <div class="grid">
@@ -76,7 +81,56 @@
             </section>
 
         </section>
+        
+    <!-- お知らせセクション -->
+<section class="works bottom">
+    <h2 class="content2-title-news align-center">
+        <p name="news">お知らせ</p>
+    </h2>
+    <hr>
+
+    <!-- ここにJavaScriptで最新5件が自動展開されます -->
+    <ul id="news-top-list" class="news-top-list">
+        <li class="news-loading">お知らせを読み込み中...</li>
+    </ul>
+</section>
     </section>
+
+</style>
+<script>
+    // news.json を読み込んで最新5件を反映
+    async function loadLatestNews() {
+        const newsList = document.getElementById('news-top-list');
+        try {
+            const res = await fetch('./news.json');
+            if (!res.ok) throw new Error("news.json not found");
+            const data = await res.json();
+
+            if (data.length === 0) {
+                newsList.innerHTML = '<li class="news-loading">現在お知らせはありません</li>';
+                return;
+            }
+
+            // 最新5件のみを切り出し
+            const top5 = data.slice(0, 5);
+
+            newsList.innerHTML = top5.map(item => `
+                <li class="news-item">
+                    <span class="news-date">${item.date}</span>
+                    <span class="news-text">
+                        <a href="${item.url}">${item.title}</a>
+                    </span>
+                </li>
+            `).join('');
+
+        } catch (err) {
+            console.error("お知らせの読み込みに失敗しました:", err);
+            newsList.innerHTML = '<li class="news-loading">お知らせの取得に失敗しました</li>';
+        }
+    }
+
+    loadLatestNews();
+</script>
 </body>
 
 <footer class="page-footer">

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>サイト内検索</title>
+    <meta name="description" content="ポートフォリオ サイト内検索">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <link rel="icon" type="image/png" href="New１icon.png">
+
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Philosopher&display=swap" rel="stylesheet">
+
+    <!-- 既存の共通スタイルシートを読み込み -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* 検索画面専用の追加・上書きスタイル */
+
+        /* 検索バー配置用ラッパー */
+        .search-input-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-wrapper.bottom-search {
+            justify-content: flex-start;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 検索インプットボックス（グレーの角丸デザイン） */
+        .search-box-input {
+            background-color: #d8d8d8;
+            border: 1px solid #b8b8b8;
+            border-radius: 4px;
+            padding: 8px 14px;
+            font-size: 15px;
+            width: 220px;
+            color: #333;
+            outline: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .search-box-input:focus {
+            background-color: #ffffff;
+            border-color: #88ffaf;
+        }
+
+        /* 『○○』の検索結果（緑の見出し帯） */
+        .search-result-banner {
+            background-color: #88ffaf;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            color: #000000;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 検索結果エリアを挟む上下の黒い太線 */
+        .search-divider {
+            border: none;
+            border-top: 3px solid #000000;
+            margin: 0;
+            opacity: 1;
+        }
+
+        /* 検索結果リスト */
+        .search-results-list {
+            list-style: disc inside;
+            padding: 1.5rem 1rem;
+            margin: 0;
+            min-height: 180px;
+        }
+
+        .search-results-list li {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #222;
+        }
+
+        /* 検索結果のリンク */
+        .search-item-link {
+            font-weight: bold;
+            color: #000000;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            margin-right: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .search-item-link:hover {
+            color: #0090aa;
+        }
+
+        .search-item-hint {
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: normal;
+        }
+
+        /* 検索結果なし・初期メッセージ表示時のスタイル */
+        .search-empty-text {
+            list-style: none;
+            font-weight: bold;
+            color: #333;
+            padding: 1rem 0;
+        }
+
+        /* メインコンテンツ枠の余白調整 */
+        .search-content-box {
+            padding: 2rem 2.5rem;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .search-content-box {
+                padding: 1.5rem 1rem;
+            }
+            .search-result-banner {
+                font-size: 1.15rem;
+                padding: 0.6rem;
+            }
+            .search-box-input {
+                width: 180px;
+                font-size: 13px;
+            }
+            .search-results-list li {
+                font-size: 0.9rem;
+            }
+            .search-item-hint {
+                display: block;
+                margin-top: 0.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ヘッダー（既存ページと同一構造） -->
+    <header class="character-page-header">
+        <div class="title-logo">
+            <img src="透過タイトルロゴ.png" alt="title-logo">
+        </div>
+        <hr>
+        <div class="back">
+            <p><a href="index.html" class="btn-back">＜Topに戻る</a></p>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ（既存スタイルの main クラスで白半透明を適用） -->
+    <main class="main search-content-box">
+        
+        <!-- 右上のサイト内検索バー -->
+        <div class="search-input-wrapper">
+            <input type="text" id="top-search" class="search-box-input" placeholder="サイト内検索🔍" autocomplete="off">
+        </div>
+
+        <!-- 『○○』の検索結果 バナー -->
+        <div class="search-result-banner">
+            『<span id="display-query"></span>』の検索結果
+        </div>
+
+        <!-- 上の太い黒線 -->
+        <hr class="search-divider">
+
+        <!-- 検索結果リスト -->
+        <ul id="results-list" class="search-results-list">
+            <li class="search-empty-text">検索ワードを入力してください</li>
+        </ul>
+
+        <!-- 下の太い黒線 -->
+        <hr class="search-divider">
+
+        <!-- 下部の別のワードを検索バー -->
+        <div class="search-input-wrapper bottom-search">
+            <input type="text" id="bottom-search" class="search-box-input" placeholder="別のワードを検索🔍" autocomplete="off">
+        </div>
+
+    </main>
+
+    <!-- フッター（既存ページと同一構造） -->
+    <footer class="page-footer">
+        <h1 class="page-title character-footer-title">
+            <p name="title">人外都市レヴレズの日常</p>
+        </h1>
+        <div class="copyright">
+            <small>copyright 2026 ＠ELMCRevres</small>
+        </div>
+    </footer>
+
+<!-- WebAssembly検索スクリプト（完全版） -->
+    <script type="module">
+        // 1. RustでビルドしたWasmライブラリをインポート
+        import init, { search_articles } from './site-search-wasm/pkg/site_search_wasm.js';
+
+        let articlesData = [];
+
+        async function initSearchSystem() {
+            // Wasmモジュールをブラウザのメモリに読み込んで初期化
+            await init();
+
+            // 記事データベース（JSON）をフェッチ
+            try {
+                const res = await fetch('./articles.json');
+                articlesData = await res.json();
+            } catch (err) {
+                console.error("articles.json の読み込みに失敗しました:", err);
+                return;
+            }
+
+            const topSearch = document.getElementById('top-search');
+            const bottomSearch = document.getElementById('bottom-search');
+            const displayQuery = document.getElementById('display-query');
+            const resultsList = document.getElementById('results-list');
+
+            // 検索実行関数
+            function performSearch(rawQuery) {
+                const query = rawQuery.trim();
+                displayQuery.textContent = query;
+
+                // 入力が空の場合
+                if (!query) {
+                    resultsList.innerHTML = '<li class="search-empty-text">検索ワードを入力してください</li>';
+                    return;
+                }
+
+                // Rust（Wasm）の高速検索関数を直接呼び出し
+                const hits = search_articles(query, articlesData);
+
+                if (hits.length === 0) {
+                    // 該当記事がない場合
+                    resultsList.innerHTML = `<li class="search-empty-text">・『${query}』を含むページは見つかりませんでした</li>`;
+                } else {
+                    // 検索結果を描画
+                    resultsList.innerHTML = hits.map(item => `
+                        <li>
+                            <a href="${item.url}" class="search-item-link">${item.title}</a>
+                            <span class="search-item-hint"></span>
+                        </li>
+                    `).join('');
+                }
+            }
+
+            // Enterキーが押された際、検索結果の1件目に直接遷移する処理
+            function handleEnter(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstResult = resultsList.querySelector('a');
+                    if (firstResult) {
+                        window.location.href = firstResult.href;
+                    }
+                }
+            }
+
+            // 上下どちらの検索バーでもリアルタイム入力・同期
+            topSearch.addEventListener('input', (e) => {
+                bottomSearch.value = e.target.value;
+                performSearch(e.target.value);
+            });
+
+            bottomSearch.addEventListener('input', (e) => {
+                topSearch.value = e.target.value;
+                performSearch(e.target.value);
+            });
+
+            topSearch.addEventListener('keydown', handleEnter);
+            bottomSearch.addEventListener('keydown', handleEnter);
+
+            // ★他ページから飛んできたURLのパラメータ「?q=○○」を読み取って自動初期検索
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParam = urlParams.get('q');
+            if (queryParam) {
+                topSearch.value = queryParam;
+                bottomSearch.value = queryParam;
+                performSearch(queryParam);
+            }
+        }
+
+        initSearchSystem();
+    </script>
+</body>
+
+</html>
