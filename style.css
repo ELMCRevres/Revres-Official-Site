@@ -404,16 +404,42 @@ footer {
 }
 
 /* キャラカード（縦 1 : 1.41） */
+/* キャラカード（縦 1 : 1.41） */
 .list-charactor {
     aspect-ratio: 1 / 1.41;
     background-color: #d8ffe5;
     margin-top: 1rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px; /* 角を少し丸めてボタン感を出す */
+    overflow: hidden;    /* 角丸に合わせて画像も切り抜く */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 通常時からうっすら浮かせる */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .list-charactor:hover {
     transform: scale(1.05) translate(-10px, -10px);
     box-shadow: 15px 15px 0 #ff69b4;
+}
+
+/* スマホ等で指でタップした瞬間の押し込み反応 */
+.list-charactor:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* キャラ一覧のテキストエリア右端に「＞」を表示（アニメ一覧には出さない） */
+.list-charactor .list-text {
+    position: relative;
+}
+
+.list-charactor .list-text::after {
+    content: "＞";
+    position: absolute;
+    right: 4px;      /* 8px → 4px にして右端ギリギリに寄せる */
+    bottom: 4px;     /* 6px → 4px に調整 */
+    font-size: 0.65rem; /* 0.75rem → 0.65rem にして少し控えめにする */
+    font-weight: bold;
+    color: #333333;
+    opacity: 0.55;
 }
 
 .list-image {

@@ -71,50 +71,53 @@
                                 </div>
                             </div>
                         </a>
-                        <div class="cotent2-item-works-1">
-                            <p>coming soon...</p>
-                            <div class="content2-frame-works-1">
+                        <a href="vote.html" class="content2-btn">
+                            <div class="cotent2-item-works-1">
+                                <p>第1回キャラ人気投票</p>
+                                <div class="content2-frame-works-1">
+                                    <img src="vote.png" alt="vote">
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </section>
 
         </section>
-        
-    <!-- お知らせセクション -->
-<section class="works bottom">
-    <h2 class="content2-title-news align-center">
-        <p name="news">お知らせ</p>
-    </h2>
-    <hr>
 
-    <!-- ここにJavaScriptで最新5件が自動展開されます -->
-    <ul id="news-top-list" class="news-top-list">
-        <li class="news-loading">お知らせを読み込み中...</li>
-    </ul>
-</section>
+        <!-- お知らせセクション -->
+        <section class="works bottom">
+            <h2 class="content2-title-news align-center">
+                <p name="news">お知らせ</p>
+            </h2>
+            <hr>
+
+            <!-- ここにJavaScriptで最新5件が自動展開されます -->
+            <ul id="news-top-list" class="news-top-list">
+                <li class="news-loading">お知らせを読み込み中...</li>
+            </ul>
+        </section>
     </section>
 
-</style>
-<script>
-    // news.json を読み込んで最新5件を反映
-    async function loadLatestNews() {
-        const newsList = document.getElementById('news-top-list');
-        try {
-            const res = await fetch('./news.json');
-            if (!res.ok) throw new Error("news.json not found");
-            const data = await res.json();
+    </style>
+    <script>
+        // news.json を読み込んで最新5件を反映
+        async function loadLatestNews() {
+            const newsList = document.getElementById('news-top-list');
+            try {
+                const res = await fetch('./news.json');
+                if (!res.ok) throw new Error("news.json not found");
+                const data = await res.json();
 
-            if (data.length === 0) {
-                newsList.innerHTML = '<li class="news-loading">現在お知らせはありません</li>';
-                return;
-            }
+                if (data.length === 0) {
+                    newsList.innerHTML = '<li class="news-loading">現在お知らせはありません</li>';
+                    return;
+                }
 
-            // 最新5件のみを切り出し
-            const top5 = data.slice(0, 5);
+                // 最新5件のみを切り出し
+                const top5 = data.slice(0, 5);
 
-            newsList.innerHTML = top5.map(item => `
+                newsList.innerHTML = top5.map(item => `
                 <li class="news-item">
                     <span class="news-date">${item.date}</span>
                     <span class="news-text">
@@ -123,14 +126,14 @@
                 </li>
             `).join('');
 
-        } catch (err) {
-            console.error("お知らせの読み込みに失敗しました:", err);
-            newsList.innerHTML = '<li class="news-loading">お知らせの取得に失敗しました</li>';
+            } catch (err) {
+                console.error("お知らせの読み込みに失敗しました:", err);
+                newsList.innerHTML = '<li class="news-loading">お知らせの取得に失敗しました</li>';
+            }
         }
-    }
 
-    loadLatestNews();
-</script>
+        loadLatestNews();
+    </script>
 </body>
 
 <footer class="page-footer">

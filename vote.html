@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>第1回 キャラクター人気投票 | 人外都市レヴレスの日常</title>
+  <meta name="description" content="『人外都市レヴレスの日常』1周年記念キャラクター人気投票ページ">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="icon" type="image/png" href="New１icon.png">
+  <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Philosopher&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=4">
+
+  <style>
+    /* 投票ページ専用スタイル */
+    .vote-main {
+      padding: 1.5rem 1.5rem 3rem;
+    }
+
+    .vote-lead {
+      text-align: center;
+      background-color: #d8ffe5;
+      border: 2px solid #88ffaf;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .vote-step-title {
+      background-color: #88ffaf;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      margin: 1.5rem 0 0.8rem;
+    }
+
+    /* キャラ一覧グリッド（幅はコンパクトに維持） */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 10px;
+    }
+
+    .char-card {
+      position: relative;
+      overflow: hidden;
+      height: 58px;
+      border: 2px solid #88ffaf;
+      border-radius: 8px;
+      background-color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+      user-select: none;
+    }
+
+    /* ホバー時・選択時ともに、キャラ一覧と同じく左上に浮いて右下にパキッとしたピンクの影を出す */
+    .char-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 5px 5px 0 #ff69b4;
+      border-color: #ff69b4;
+    }
+
+    .char-card:active {
+      transform: translate(0, 0);
+      box-shadow: 2px 2px 0 #ff69b4;
+    }
+
+    .char-card.selected {
+      transform: translate(-4px, -4px);
+      box-shadow: 6px 6px 0 #ff69b4;
+      border-color: #ff69b4;
+      background-color: #ffffff;
+    }
+
+    /* 顔の透かし画像 */
+    .char-watermark {
+      position: absolute;
+      right: -12px;
+      top: 0;
+      width: 85px;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      transform: scale(2.3);
+      transform-origin: center top;
+      opacity: 0.28;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .char-card:hover .char-watermark,
+    .char-card.selected .char-watermark {
+      opacity: 0.65;
+    }
+
+    /* ぼやっとした白フチ（text-shadow）を消してパキッとさせる */
+    .char-card-name {
+      position: relative;
+      z-index: 1;
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #222222;
+    }
+
+    .char-card.selected .char-card-name {
+      color: #d63384;
+    }
+
+    /* コメント欄・投票ボタン */
+    .comment-box {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      background: #fff;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+
+    .comment-box:focus {
+      outline: none;
+      border-color: #33cc66;
+    }
+
+    .vote-btn {
+      display: block;
+      width: 100%;
+      max-width: 340px;
+      margin: 1.8rem auto 0;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: #33cc66;
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(51, 204, 102, 0.4);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .vote-btn:hover:not(:disabled) {
+      background: #ff69b4;
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.4);
+    }
+
+    .vote-btn:disabled {
+      background: #aaa;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* 投票完了画面（GIF＋吹き出し演出） */
+    .result-box {
+      display: none;
+      background: #ffffff;
+      border: 3px solid #88ffaf;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-title {
+      font-size: 1.3rem;
+      color: #222;
+      margin-bottom: 1.2rem;
+      border-bottom: 2px dotted #88ffaf;
+      padding-bottom: 0.5rem;
+    }
+
+    .thanks-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .thanks-visual {
+      width: 140px;
+      height: 140px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background-color: #d8ffe5;
+      border: 2px solid #88ffaf;
+      overflow: hidden;
+    }
+
+    .thanks-visual img.is-stand {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      transform: scale(2.1);
+      transform-origin: center top;
+    }
+
+    .thanks-visual img.is-gif {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform: none;
+    }
+
+    /* 吹き出しデザイン（改行をそのまま反映） */
+    .speech-bubble {
+      position: relative;
+      background: #d8ffe5;
+      border: 2px solid #33cc66;
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      text-align: left;
+      font-weight: bold;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #222;
+      flex: 1;
+      max-width: 460px;
+      white-space: pre-wrap;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-style: solid;
+      border-width: 10px 14px 10px 0;
+      border-color: transparent #33cc66 transparent transparent;
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      left: -11px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-style: solid;
+      border-width: 8px 12px 8px 0;
+      border-color: transparent #d8ffe5 transparent transparent;
+    }
+
+    .share-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 12px 24px;
+      background: #0f1419;
+      color: #fff;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+
+    .share-btn:hover {
+      background: #333;
+      transform: translateY(-2px);
+    }
+
+    /* うらめ専用・画面暗転ドアップ仕掛け */
+    .urame-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: #000000;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      cursor: pointer;
+      animation: urameFadeIn 0.25s ease forwards;
+    }
+
+    .urame-face-box {
+      width: 90vmin;
+      height: 90vmin;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .urame-face-box img.is-stand-zoom {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      transform: scale(2.8);
+      transform-origin: center 12%;
+    }
+
+    .urame-face-box img.is-custom-face {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .urame-close-hint {
+      position: absolute;
+      bottom: 20px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 0.85rem;
+    }
+
+    @keyframes urameFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* スマホ表示調整 */
+    @media (max-width: 600px) {
+      .char-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .thanks-stage {
+        flex-direction: column;
+      }
+
+      .speech-bubble {
+        width: 100%;
+      }
+
+      .speech-bubble::before {
+        left: 50%;
+        top: -14px;
+        transform: translateX(-50%);
+        border-width: 0 10px 14px 10px;
+        border-color: transparent transparent #33cc66 transparent;
+      }
+
+      .speech-bubble::after {
+        left: 50%;
+        top: -11px;
+        transform: translateX(-50%);
+        border-width: 0 8px 12px 8px;
+        border-color: transparent transparent #d8ffe5 transparent;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="character-page-header">
+    <div class="title-logo">
+      <img src="透過タイトルロゴ.png" alt="title-logo">
+    </div>
+    <hr>
+    <div class="back">
+      <p><a href="index.html" class="btn-back">＜Topに戻る</a></p>
+    </div>
+  </header>
+
+  <div class="align-center main">
+    <div class="title">
+      <p>第1回 キャラクター人気投票</p>
+    </div>
+  </div>
+
+  <main class="main vote-main">
+    <div class="vote-lead">
+      <p><strong>『人外都市レヴレスの日常』1周年記念企画！</strong><br>
+        上位3名は1周年特別ショート動画に出演！さらに上位8名はLINEスタンプ化！（2027年3月25日までの販売予定）
+        <br>
+        ※お一人様<strong>1日1回</strong>投票できます（毎日0時にリセット）。
+      </p>
+    </div>
+
+    <!-- 投票フォームエリア -->
+    <div id="vote-form-area">
+      <h3 class="vote-step-title">1. 投票するキャラクターを選択</h3>
+      <div id="char-grid" class="char-grid"></div>
+
+      <h3 class="vote-step-title">2. 応援コメント（任意・空欄でも投票できます）</h3>
+      <textarea id="vote-comment" class="comment-box" rows="3" placeholder="キャラへのメッセージがあればどうぞ！結果発表で紹介されるかも？"></textarea>
+
+      <button id="submit-vote-btn" class="vote-btn" disabled>キャラクターを選んでください</button>
+    </div>
+
+    <!-- 投票完了＆専用メッセージ表示エリア -->
+    <div id="vote-result-area" class="result-box">
+      <h2 id="result-title" class="result-title">投票ありがとうございました！</h2>
+      <div class="thanks-stage">
+        <div class="thanks-visual">
+          <img id="result-char-img" src="" alt="">
+        </div>
+        <div class="speech-bubble">
+          <p id="result-message"></p>
+        </div>
+      </div>
+      <p style="font-size: 0.85rem; color: #666;">※本日の投票は完了しました。また明日0時以降に投票できます！</p>
+      <a id="x-share-link" class="share-btn" href="#" target="_blank" rel="noopener noreferrer">X（旧Twitter）で投票をシェアする</a>
+    </div>
+  </main>
+
+  <!-- うらめ専用・数秒後に顔が迫るオーバーレイ -->
+  <div id="urame-jumpscare" class="urame-overlay" title="クリックで戻る">
+    <div class="urame-face-box">
+      <img id="urame-jumpscare-img" src="うらめ_Web用0000.png" alt="うらめ" class="is-stand-zoom">
+    </div>
+    <p class="urame-close-hint">（画面をタップ・クリックすると戻ります）</p>
+  </div>
+
+  <footer class="page-footer">
+    <h1 class="page-title character-footer-title">
+      <p name="title">人外都市レヴレスの日常</p>
+    </h1>
+    <div class="copyright">
+      <small>copyright 2026 ＠ELMCRevres</small>
+    </div>
+  </footer>
+
+  <script>
+    // ==========================================
+    // 1. Googleフォーム連携設定（本番用）
+    // ==========================================
+    const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf0PeHMjJlC0_lO3HT-YC0cLUMchoPlflshR36K8nt5e0mvWw/formResponse";
+    const ENTRY_CHAR_NAME = "entry.1433881243";
+    const ENTRY_COMMENT = "entry.819333763";
+
+    // ※うらめ専用のびっくり顔画像を別途用意した場合はここにファイル名を入れる（空欄なら立ち絵の顔を超拡大）
+    const URAME_SCARE_IMAGE = "";
+
+    // ==========================================
+    // 2. 投票対象キャラクターデータ（全36名・セリフ反映済み）
+    // ==========================================
+    const CHARACTERS = [
+      { name: "よさん", img: "よよよ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_yosan.html", msg: "投票ありがとう！\n…こういうのって、第四の壁っていうんだっけ？" },
+      { name: "デイズ", img: "デイズ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_days.html", msg: "投票ありがとう！\nこれからも頑張っちゃうよ！" },
+      { name: "スカイ", img: "スカイ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_sky.html", msg: "投票ありがとう…\n面白いデータが手に入りそうだ" },
+      { name: "クローラム", img: "クローラム_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_kurolamb.html", msg: "投票ありがとうございます！\n私だけ２票分には…ならないですよね" },
+      { name: "ケンタ", img: "ケンタ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_kenta.html", msg: "投票ありがとう！\nこの投票も差して行くよ！" },
+      { name: "レオ", img: "レオ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_leo.html", msg: "投票ありがとな！\nケンタとリアードと勝負してるんだ～" },
+      { name: "リアード", img: "リアード_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_ryad.html", msg: "投票ありがとう！\n…誰か麻雀教えてくれ～…" },
+      { name: "アリス", img: "アリス_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_alice.html", msg: "投票ありがとう！\n１位になったらどうしよ～！" },
+      { name: "くまぐるみ", img: "くまぐるみ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_kumagurumi.html", msg: "投票ありがと～\nさっき似た人が居たの？" },
+      { name: "はやて", img: "はやて_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_hayate.html", msg: "投票ありがと！\nえ、たまご食べてみたい…？" },
+      { name: "ミネット", img: "ミネット_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_minet.html", msg: "投票ありがとな\n手先の器用さなら負けないんだが" },
+      { name: "アンジ", img: "アンジ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_anji.html", msg: "投票ありがとー！\n誰が１位になるのかな～？" },
+      { name: "マナ", img: "マナ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_mana.html", msg: "投票ありがとうございますわ！\n結果がとってもたのしみです！" },
+      { name: "ヒイラギ", img: "ヒイラギ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_hiiragi.html", msg: "投票ありがとう\n結果発表、期待してもいいかな…？" },
+      { name: "ミズク", img: "ミズク_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_mizuku.html", msg: "投票ありがと～\n１位になるのは誰だと思う？" },
+      { name: "ミューカス", img: "ミューカス_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_mucus.html", msg: "投票ありがとう\n勉強は順調か？" },
+      { name: "うらめ", img: "うらめ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_urame.html", msg: "投票ありがとう\n後ろを見て" },
+      { name: "ルキノ", img: "ルキノ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_rkino.html", msg: "投票どうも…\n幽霊には気をつけて欲しいっす…特にかまぼこ目のやつ…" },
+      { name: "グレイブ", img: "グレイブ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_grave.html", msg: "投票ありがとう…\n俺はもっと強くなりたい…" },
+      { name: "ミミコ", img: "ミミコ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_mimiko.html", msg: "投票ありがとう\nこの姿を褒められるのが、一番嬉しい…" },
+      { name: "ちゅい", img: "ちゅい_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_tyui.html", msg: "投票ありがとう！\nどこかで会ったことある…？\nどこだったっけな…" },
+      { name: "ねの", img: "ねの_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_neno.html", msg: "投票ありがとう\nねえねえ、うちで働かない？" },
+      { name: "ルユム", img: "ルユム_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_ruyumu.html", msg: "投票ありがとう！\nお昼はまだ？うちで食べてく？" },
+      { name: "アイ", img: "アイ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_ai.html", msg: "投票ありがとう！\n街の平和はおまかせを！" },
+      { name: "フォーチュン", img: "フォーチュン_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_fortune.html", msg: "投票ありがとうございます\n今後ともご贔屓に！" },
+      { name: "ツカネ", img: "ツカネ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_tsukane.html", msg: "投票ありがとな！\nこれからも自由に生きるぞ！" },
+      { name: "チラン", img: "チラン_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_chillan.html", msg: "投票ありがとうございます…\nあの、気になる人と仲良くなるには…\nどうすればいいと思います？" },
+      { name: "テリア", img: "テリア_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_terrier.html", msg: "投票ありがとー！\n私のこと、好きってことだよね？" },
+      { name: "ケルシー", img: "Kelsey_Web0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_kelsey.html", msg: "投票ありがとうございます\nもしかして仲間に入りたい…ですか？" },
+      { name: "しおり", img: "しおり_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_shiori.html", msg: "投票ありがとうございます！\nえっと、期待されてる分頑張っちゃいます！" },
+      { name: "スマイル", img: "スマイル_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_smile.html", msg: "投票したのか\nお前は『正義』を信じるか？" },
+      { name: "ランド", img: "ランド_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_land.html", msg: "投票感謝する\nこのデータは何に使えるだろうか…" },
+      { name: "ニュート", img: "ニュート_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_newt.html", msg: "投票ありがとな…\nおい、女装のことは誰にも言うなよ…！" },
+      { name: "ねこぐるみ", img: "ねこぐるみ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_nekogurumi.html", msg: "投票ありがとう！\nさっき似た人が居たって？" },
+      { name: "善女竜王", img: "善女竜王_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_zennyoryuou.html", msg: "投票感謝じゃ！\nおぬし、わかっておるのぉ" },
+      { name: "ツクモ", img: "ツクモ_Web用0000.png", gif: "", shareUrl: "https://elmcrevres.github.io/Revres-Official-Site/share_tsukumo.html", msg: "投票ありがとう…\nふーん、俺に投票ね…ふーん" }
+    ];
+
+    // ==========================================
+    // 3. 制御プログラム（1日1回制限＆裏送信処理）
+    // ==========================================
+    const STORAGE_KEY = "revres_vote_2026_last_date";
+    let selectedChar = null;
+
+    function getTodayString() {
+      const now = new Date();
+      return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // うらめオーバーレイのクリック解除設定
+      const urameOverlay = document.getElementById("urame-jumpscare");
+      urameOverlay.addEventListener("click", () => {
+        urameOverlay.style.display = "none";
+      });
+
+      const lastVotedDate = localStorage.getItem(STORAGE_KEY);
+      const savedCharName = localStorage.getItem(STORAGE_KEY + "_char");
+
+      // 再読み込み時（すでに投票済みの場合）はびっくり演出なしで結果画面を表示
+      if (lastVotedDate === getTodayString() && savedCharName) {
+        const charObj = CHARACTERS.find(c => c.name === savedCharName) || {
+          name: savedCharName,
+          img: "Noimage_Web用0000.png",
+          gif: "",
+          shareUrl: "",
+          msg: "投票ありがとうございました！"
+        };
+        showResultScreen(charObj, false);
+        return;
+      }
+
+      const grid = document.getElementById("char-grid");
+      const submitBtn = document.getElementById("submit-vote-btn");
+
+      CHARACTERS.forEach(char => {
+        const card = document.createElement("div");
+        card.className = "char-card";
+        card.innerHTML = `
+  <img class="char-watermark" src="vote_img/${char.img}" alt="" loading="lazy" decoding="async">
+  <span class="char-card-name">${char.name}</span>
+`;
+        card.addEventListener("click", () => {
+          document.querySelectorAll(".char-card").forEach(c => c.classList.remove("selected"));
+          card.classList.add("selected");
+          selectedChar = char;
+          submitBtn.disabled = false;
+          submitBtn.textContent = `「${char.name}」に投票する！`;
+        });
+        grid.appendChild(card);
+      });
+
+      submitBtn.addEventListener("click", () => {
+        if (!selectedChar) return;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "送信中...";
+
+        const comment = document.getElementById("vote-comment").value.trim();
+        const formData = new FormData();
+        formData.append(ENTRY_CHAR_NAME, selectedChar.name);
+        formData.append(ENTRY_COMMENT, comment);
+
+        fetch(GOOGLE_FORM_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body: formData
+        }).then(() => {
+          localStorage.setItem(STORAGE_KEY, getTodayString());
+          localStorage.setItem(STORAGE_KEY + "_char", selectedChar.name);
+          // 投票直後は演出フラグ true で結果画面を表示
+          showResultScreen(selectedChar, true);
+        }).catch(() => {
+          alert("通信エラーが発生しました。時間をおいて再度お試しください。");
+          submitBtn.disabled = false;
+          submitBtn.textContent = `「${selectedChar.name}」に投票する！`;
+        });
+      });
+    });
+
+    function showResultScreen(charObj, isJustVoted) {
+      document.getElementById("vote-form-area").style.display = "none";
+      const resultArea = document.getElementById("vote-result-area");
+      resultArea.style.display = "block";
+
+      document.getElementById("result-title").textContent = `「${charObj.name}」に投票しました！`;
+      document.getElementById("result-message").textContent = charObj.msg;
+
+      // GIFが設定されていればGIFを、なければ通常の立ち絵（顔アップ）を表示
+      const resultImg = document.getElementById("result-char-img");
+      if (charObj.gif) {
+        resultImg.src = charObj.gif;
+        resultImg.className = "is-gif";
+      } else {
+        resultImg.src = charObj.img;
+        resultImg.className = "is-stand";
+      }
+
+      // Xシェア用URL（ツイート文では改行を半角スペースに整えて見やすくする）
+      const cleanMsg = charObj.msg.replace(/\n/g, " ");
+      const targetUrl = charObj.shareUrl ? charObj.shareUrl : window.location.href;
+      const tweetText = `『人外都市レヴレスの日常』キャラクター人気投票で【${charObj.name}】に投票しました！\n「${cleanMsg}」\n#人外都市レヴレスの日常 #レヴレス人気投票\n`;
+      const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(targetUrl)}`;
+      document.getElementById("x-share-link").href = shareUrl;
+
+      // うらめ専用仕掛け：投票直後のみ 3.5秒後に顔画像を表示
+      if (isJustVoted && charObj.name === "うらめ") {
+        setTimeout(() => {
+          const overlay = document.getElementById("urame-jumpscare");
+          const scareImg = document.getElementById("urame-jumpscare-img");
+          if (URAME_SCARE_IMAGE) {
+            scareImg.src = URAME_SCARE_IMAGE;
+            scareImg.className = "is-custom-face";
+          } else {
+            scareImg.src = charObj.img;
+            scareImg.className = "is-stand-zoom";
+          }
+          overlay.style.display = "flex";
+        }, 3500);
+      }
+    }
+  </script>
+
+</body>
+
+</html>

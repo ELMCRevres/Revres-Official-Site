@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>【人気投票開催！】 - お知らせ</title>
+    <meta name="description" content="ポートフォリオ お知らせ">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <link rel="icon" type="image/png" href="New１icon.png">
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Philosopher&display=swap" rel="stylesheet">
+
+    <!-- 既存の共通スタイルシート -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .news-container {
+            padding: 2.5rem 2.5rem 3rem 2.5rem;
+            box-sizing: border-box;
+        }
+
+        /* お知らせ 見出し帯 */
+        .news-banner {
+            background-color: #88ffaf;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            color: #000000;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 上下の太線 */
+        .news-divider {
+            border: none;
+            border-top: 3px solid #000000;
+            margin: 0;
+            opacity: 1;
+        }
+
+        /* 記事見出し・日付 */
+        .news-article-header {
+            margin-top: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .news-article-title {
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #000000;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .news-article-date {
+            text-align: right;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #111111;
+            margin-top: 0.8rem;
+        }
+
+        /* 記事本文領域 */
+        .news-article-body {
+            min-height: 220px;
+            padding: 2rem 0;
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: #222222;
+        }
+
+        .news-article-body p {
+            margin-bottom: 1.2rem;
+        }
+
+        /* 本文中の画像スタイル（中央揃え・角丸・レスポンシブ） */
+        .news-article-body img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem auto;
+        }
+
+        /* 前後ナビゲーション */
+        .news-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .news-pagination a {
+            color: #111111;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+
+        .news-pagination a:hover {
+            color: #0090aa;
+        }
+
+        .news-pagination-prev {
+            text-align: left;
+            max-width: 45%;
+        }
+
+        .news-pagination-next {
+            text-align: right;
+            max-width: 45%;
+        }
+
+        @media (max-width: 768px) {
+            .news-container {
+                padding: 1.5rem 1rem 2rem 1rem;
+            }
+            .news-banner {
+                font-size: 1.2rem;
+                padding: 0.6rem;
+            }
+            .news-article-title {
+                font-size: 1.4rem;
+            }
+            .news-article-date {
+                font-size: 0.85rem;
+            }
+            .news-article-body {
+                font-size: 0.95rem;
+                padding: 1.5rem 0;
+            }
+            .news-pagination {
+                font-size: 0.85rem;
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: flex-start;
+            }
+            .news-pagination-next {
+                text-align: left;
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ヘッダー -->
+    <header class="character-page-header">
+        <div class="title-logo">
+            <img src="透過タイトルロゴ.png" alt="title-logo">
+        </div>
+        <hr>
+        <div class="back">
+            <p><a href="index.html" class="btn-back">＜Topに戻る</a></p>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main news-container">
+
+        <div class="news-banner">お知らせ</div>
+
+        <hr class="news-divider">
+
+        <div class="news-article-header">
+            <h2 class="news-article-title">1周年記念！キャラクター人気投票開催のお知らせ</h2>
+            <div class="news-article-date">更新日：2026/11/27</div>
+        </div>
+
+        <hr class="news-divider">
+
+        <article class="news-article-body">
+                「人外都市レヴレズの日常」1周年を記念し、第一回キャラクター人気投票を開催いたします！<br>
+                ・開催期間：2026年11月27日（金）～12月6日（日）23:59<br>
+                ・投票ルール：お一人様1日1回まで投票可能（ログイン不要）<br>
+                ・上位3キャラ：1周年記念の特別ショート動画に出演<br>
+                ・上位8キャラ：1周年記念LINEスタンプ（2027年3月25日までの販売予定）<br>
+                <a href="vote.html">▶ 投票ページはこちら！</a><br>
+                みなさまのご参加をお待ちしております。
+
+                【アップデートのお知らせ】
+                ・<a href="character_shiori.html">しおり</a>のキャラクター紹介ページを追加しました！
+        </article>
+
+        <hr class="news-divider">
+
+        <!-- 前後ナビゲーション -->
+        <nav class="news-pagination">
+            <div class="news-pagination-prev">
+                <!-- 前の記事がない場合は空にするか非表示に -->
+                <a href="news_20261114.html">＜アップデートのお知らせ</a>
+            </div>
+        </nav>
+
+    </main>
+
+    <!-- フッター -->
+    <footer class="page-footer">
+        <h1 class="page-title character-footer-title">
+            <p name="title">人外都市レヴレズの日常</p>
+        </h1>
+        <div class="copyright">
+            <small>copyright 2026 ＠ELMCRevres</small>
+        </div>
+    </footer>
+</body>
+
+</html>
