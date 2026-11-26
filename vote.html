@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title>第1回 キャラクター人気投票 | 人外都市レヴレスの日常</title>
-  <meta name="description" content="『人外都市レヴレスの日常』1周年記念キャラクター人気投票ページ">
+  <title>第1回 キャラクター人気投票 | 人外都市レヴレズの日常</title>
+  <meta name="description" content="『人外都市レヴレズの日常』1周年記念キャラクター人気投票ページ">
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <link rel="icon" type="image/png" href="New１icon.png">
@@ -375,7 +375,7 @@
 
   <main class="main vote-main">
     <div class="vote-lead">
-      <p><strong>『人外都市レヴレスの日常』1周年記念企画！</strong><br>
+      <p><strong>『人外都市レヴレズの日常』1周年記念企画！</strong><br>
         上位3名は1周年特別ショート動画に出演！さらに上位8名はLINEスタンプ化！（2027年3月25日までの販売予定）
         <br>
         ※お一人様<strong>1日1回</strong>投票できます（毎日0時にリセット）。
@@ -419,7 +419,7 @@
 
   <footer class="page-footer">
     <h1 class="page-title character-footer-title">
-      <p name="title">人外都市レヴレスの日常</p>
+      <p name="title">人外都市レヴレズの日常</p>
     </h1>
     <div class="copyright">
       <small>copyright 2026 ＠ELMCRevres</small>
@@ -581,7 +581,7 @@
       // Xシェア用URL（ツイート文では改行を半角スペースに整えて見やすくする）
       const cleanMsg = charObj.msg.replace(/\n/g, " ");
       const targetUrl = charObj.shareUrl ? charObj.shareUrl : window.location.href;
-      const tweetText = `『人外都市レヴレスの日常』キャラクター人気投票で【${charObj.name}】に投票しました！\n「${cleanMsg}」\n#人外都市レヴレスの日常 #レヴレス人気投票\n`;
+      const tweetText = `『人外都市レヴレズの日常』キャラクター人気投票で【${charObj.name}】に投票しました！\n「${cleanMsg}」\n#人外都市レヴレズの日常 #レヴレズ人気投票\n`;
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(targetUrl)}`;
       document.getElementById("x-share-link").href = shareUrl;
 
